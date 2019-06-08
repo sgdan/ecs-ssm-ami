@@ -1,0 +1,35 @@
+{
+    "variables": {
+        "subnet_id": ""
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "subnet_id": "{{user `subnet_id`}}",
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "name": "amzn2-ami-ecs-hvm*-x86_64-ebs",
+                    "root-device-type": "ebs"
+                },
+                "owners": [
+                    "591542846629"
+                ],
+                "most_recent": true
+            },
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "ecs-with-ssm {{timestamp}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm",
+                "sudo systemctl enable amazon-ssm-agent"
+            ],
+            "pause_before": "30s"
+        }
+    ]
+}
